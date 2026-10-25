@@ -1,8 +1,162 @@
-export type Check = {id:string; label:string; guidance:string};
-export type Task = {id:string; title:string; area:string; minutes:number; intro:string; facts:{label:string;value:string}[]; policy:string[]; prompt:string; checks:Check[]; sample:string};
-export const tasks:Task[] = [
- {id:'double-charge',title:'A customer sees two charges',area:'Customer service',minutes:5,intro:'You are on the service desk at a fictional neighbourhood shop. A customer shows you two pending card charges and says: “You charged me twice. I need that money today.”',facts:[{label:'Receipt',value:'R180 · one purchase'},{label:'Bank screen',value:'Two pending entries of R180'},{label:'Your role',value:'Service assistant'}],policy:['A pending entry is not proof that a payment has settled.','Check the receipt and payment status with the supervisor.','Only the supervisor can authorise a refund after confirming a duplicate settled payment.','Do not promise when the bank will release a pending amount.'],prompt:'Write what you would say to the customer, then explain what you would check and do next.',checks:[{id:'care',label:'Acknowledge the concern',guidance:'Recognise the inconvenience without blaming the customer.'},{id:'facts',label:'Use the information carefully',guidance:'Distinguish a pending R180 entry from a confirmed duplicate payment.'},{id:'action',label:'Choose a permitted next step',guidance:'Check the receipt and payment status with the supervisor.'},{id:'clarity',label:'Make the next step clear',guidance:'Explain the sequence and avoid promising a refund or bank timing.'}],sample:'I am sorry this has caused concern. The receipt shows one R180 purchase, while your bank screen shows two pending entries. A pending entry does not confirm a second settled payment. First, I will check the receipt and payment status with my supervisor. Then we can confirm whether a duplicate payment settled. Only the supervisor can authorise a refund after that check. I cannot promise when the bank will release a pending amount.'},
- {id:'stock-check',title:'Check the stock count',area:'Retail numeracy',minutes:4,intro:'You are preparing the evening stock handover. The shelf count does not match the stock sheet. Work out the expected stock before suggesting what to check.',facts:[{label:'Opening stock',value:'24 units'},{label:'Delivered today',value:'12 units'},{label:'Sold today',value:'19 units'},{label:'Physical count',value:'15 units'}],policy:['Expected stock = opening stock + deliveries − sales.','Record the physical count separately from expected stock.','Recount and check delivery, sales and damage records before changing the stock sheet.','Do not accuse a colleague or assume theft.'],prompt:'Calculate expected stock and the difference. Write a short handover explaining your calculation and the next checks.',checks:[{id:'expected',label:'Calculate expected stock',guidance:'Show the calculation using 24, 12 and 19.'},{id:'difference',label:'Describe the difference',guidance:'Compare the physical count of 15 with expected stock.'},{id:'action',label:'Check before changing records',guidance:'Recount and check the records rather than assume a cause.'},{id:'clarity',label:'Write a usable handover',guidance:'State the next action clearly and keep facts separate from assumptions.'}],sample:'Expected stock is 24 + 12 - 19 = 17 units. The physical count is 15, so there is a shortage of 2 units. First, I will recount the shelf. Then I will check the delivery, sales and damage records with the supervisor before changing the stock sheet. The cause is not yet confirmed.'},
- {id:'handover',title:'Write a shift handover',area:'Workplace communication',minutes:4,intro:'Your shift ends while a delivery issue is still open. Write a handover that lets the next person continue without starting again.',facts:[{label:'Delivery',value:'Order 204 · 10 boxes expected'},{label:'Received',value:'8 boxes at 14:10'},{label:'Action taken',value:'Supervisor notified; driver has left'},{label:'Still open',value:'Supplier confirmation for 2 missing boxes'}],policy:['Record what is known, what has been done and what remains open.','The next shift should contact the supplier through the supervisor.','Do not mark the order complete until the missing boxes are resolved.'],prompt:'Write the handover to the next shift. Include the facts, action already taken and who should do what next.',checks:[{id:'facts',label:'Carry the facts forward',guidance:'Identify order 204, eight received and two missing.'},{id:'done',label:'Record action already taken',guidance:'Include that the supervisor has been notified.'},{id:'action',label:'Give the next shift a next step',guidance:'Ask them to follow up with the supplier through the supervisor.'},{id:'clarity',label:'Keep the issue open',guidance:'Say the order remains incomplete until the missing boxes are resolved.'}],sample:'Order 204: 8 of 10 boxes arrived at 14:10; 2 boxes are missing. The supervisor has been notified and the driver has left. Next shift: please follow up with the supplier through the supervisor. Keep the order open until the missing boxes are resolved; do not mark it complete yet.'}
+export type Check = { id: string; label: string; guidance: string };
+export type Task = {
+  id: string;
+  title: string;
+  area: string;
+  minutes: number;
+  intro: string;
+  facts: { label: string; value: string }[];
+  policy: string[];
+  prompt: string;
+  checks: Check[];
+  sample: string;
+};
+export const tasks: Task[] = [
+  {
+    id: "double-charge",
+    title: "A customer sees two charges",
+    area: "Customer service",
+    minutes: 5,
+    intro:
+      "You are on the service desk at a fictional neighbourhood shop. A customer shows you two pending card charges and says: “You charged me twice. I need that money today.”",
+    facts: [
+      { label: "Receipt", value: "R180 · one purchase" },
+      { label: "Bank screen", value: "Two pending entries of R180" },
+      { label: "Your role", value: "Service assistant" },
+    ],
+    policy: [
+      "A pending entry is not proof that a payment has settled.",
+      "Check the receipt and payment status with the supervisor.",
+      "Only the supervisor can authorise a refund after confirming a duplicate settled payment.",
+      "Do not promise when the bank will release a pending amount.",
+    ],
+    prompt:
+      "Write what you would say to the customer, then explain what you would check and do next.",
+    checks: [
+      {
+        id: "care",
+        label: "Acknowledge the concern",
+        guidance: "Recognise the inconvenience without blaming the customer.",
+      },
+      {
+        id: "facts",
+        label: "Use the information carefully",
+        guidance:
+          "Distinguish a pending R180 entry from a confirmed duplicate payment.",
+      },
+      {
+        id: "action",
+        label: "Choose a permitted next step",
+        guidance: "Check the receipt and payment status with the supervisor.",
+      },
+      {
+        id: "clarity",
+        label: "Make the next step clear",
+        guidance:
+          "Explain the sequence and avoid promising a refund or bank timing.",
+      },
+    ],
+    sample:
+      "I am sorry this has caused concern. The receipt shows one R180 purchase, while your bank screen shows two pending entries. A pending entry does not confirm a second settled payment. First, I will check the receipt and payment status with my supervisor. Then we can confirm whether a duplicate payment settled. Only the supervisor can authorise a refund after that check. I cannot promise when the bank will release a pending amount.",
+  },
+  {
+    id: "stock-check",
+    title: "Check the stock count",
+    area: "Retail numeracy",
+    minutes: 4,
+    intro:
+      "You are preparing the evening stock handover. The shelf count does not match the stock sheet. Work out the expected stock before suggesting what to check.",
+    facts: [
+      { label: "Opening stock", value: "24 units" },
+      { label: "Delivered today", value: "12 units" },
+      { label: "Sold today", value: "19 units" },
+      { label: "Physical count", value: "15 units" },
+    ],
+    policy: [
+      "Expected stock = opening stock + deliveries − sales.",
+      "Record the physical count separately from expected stock.",
+      "Recount and check delivery, sales and damage records before changing the stock sheet.",
+      "Do not accuse a colleague or assume theft.",
+    ],
+    prompt:
+      "Calculate expected stock and the difference. Write a short handover explaining your calculation and the next checks.",
+    checks: [
+      {
+        id: "expected",
+        label: "Calculate expected stock",
+        guidance: "Show the calculation using 24, 12 and 19.",
+      },
+      {
+        id: "difference",
+        label: "Describe the difference",
+        guidance: "Compare the physical count of 15 with expected stock.",
+      },
+      {
+        id: "action",
+        label: "Check before changing records",
+        guidance: "Recount and check the records rather than assume a cause.",
+      },
+      {
+        id: "clarity",
+        label: "Write a usable handover",
+        guidance:
+          "State the next action clearly and keep facts separate from assumptions.",
+      },
+    ],
+    sample:
+      "Expected stock is 24 + 12 - 19 = 17 units. The physical count is 15, so there is a shortage of 2 units. First, I will recount the shelf. Then I will check the delivery, sales and damage records with the supervisor before changing the stock sheet. The cause is not yet confirmed.",
+  },
+  {
+    id: "handover",
+    title: "Write a shift handover",
+    area: "Workplace communication",
+    minutes: 4,
+    intro:
+      "Your shift ends while a delivery issue is still open. Write a handover that lets the next person continue without starting again.",
+    facts: [
+      { label: "Delivery", value: "Order 204 · 10 boxes expected" },
+      { label: "Received", value: "8 boxes at 14:10" },
+      { label: "Action taken", value: "Supervisor notified; driver has left" },
+      {
+        label: "Still open",
+        value: "Supplier confirmation for 2 missing boxes",
+      },
+    ],
+    policy: [
+      "Record what is known, what has been done and what remains open.",
+      "The next shift should contact the supplier through the supervisor.",
+      "Do not mark the order complete until the missing boxes are resolved.",
+    ],
+    prompt:
+      "Write the handover to the next shift. Include the facts, action already taken and who should do what next.",
+    checks: [
+      {
+        id: "facts",
+        label: "Carry the facts forward",
+        guidance: "Identify order 204, eight received and two missing.",
+      },
+      {
+        id: "done",
+        label: "Record action already taken",
+        guidance: "Include that the supervisor has been notified.",
+      },
+      {
+        id: "action",
+        label: "Give the next shift a next step",
+        guidance:
+          "Ask them to follow up with the supplier through the supervisor.",
+      },
+      {
+        id: "clarity",
+        label: "Keep the issue open",
+        guidance:
+          "Say the order remains incomplete until the missing boxes are resolved.",
+      },
+    ],
+    sample:
+      "Order 204: 8 of 10 boxes arrived at 14:10; 2 boxes are missing. The supervisor has been notified and the driver has left. Next shift: please follow up with the supplier through the supervisor. Keep the order open until the missing boxes are resolved; do not mark it complete yet.",
+  },
 ];
-export function getTask(id:string){return tasks.find(t=>t.id===id)}
+export function getTask(id: string) {
+  return tasks.find((t) => t.id === id);
+}

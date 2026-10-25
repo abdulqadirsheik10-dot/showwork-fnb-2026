@@ -1,20 +1,109 @@
-import assert from 'node:assert/strict';
-const base=process.env.TEST_BASE||'http://127.0.0.1:4173';
-async function call(path,method='GET',data,cookie='',origin=base){const r=await fetch(base+'/api/'+path,{method,headers:{Origin:origin,...(cookie?{Cookie:cookie}:{}),...(data!==undefined?{'Content-Type':'application/json'}:{})},body:data!==undefined?JSON.stringify(data):undefined});return {status:r.status,body:await r.json(),cookie:r.headers.get('set-cookie')?.split(';')[0]}}
-let checks=0;const ok=(v,msg)=>{assert(v,msg);checks++;console.log('PASS',msg)};
-const a=await call('session','POST'),b=await call('session','POST');ok(a.cookie&&b.cookie&&a.cookie!==b.cookie,'isolated sessions');
-const text='I am sorry this has caused concern. The receipt shows one R180 purchase and two pending entries. First, I will check payment status with my supervisor. Then we can confirm what settled. I cannot promise a refund today.';
-const saved=await call('attempts','POST',{task:'double-charge',response:text},a.cookie);ok(saved.status===201,'save response');
-ok((await call('attempts','GET',undefined,b.cookie)).body.attempts.length===0,'other session cannot read response');
-ok((await call('attempts','POST',{task:'double-charge',response:'tiny'},a.cookie)).status===400,'short input rejected');
-ok((await call('attempts','POST',{task:'bad',response:text},a.cookie)).status===400,'unknown task rejected');
-ok((await call('attempts','POST',{task:'double-charge',response:text},a.cookie,'https://untrusted.example')).status===403,'foreign-origin write rejected');
-ok((await call('attempts','POST',{task:'double-charge',response:text})).status===401,'unauthenticated write rejected');
-const share=await call('shares','POST',{task:'double-charge'},a.cookie);ok(share.status===201,'create share');
-const token=share.body.token;ok((await call('card/'+token)).body.attempts.length===1,'public snapshot readable');
-await call('attempts','POST',{task:'double-charge',response:text+' I will explain the next steps.'},a.cookie);ok((await call('card/'+token)).body.attempts.length===1,'snapshot excludes later revisions');
-await call('shares','DELETE',{token},b.cookie);ok((await call('card/'+token)).status===200,'other session cannot revoke card');
-await call('shares','DELETE',{token},a.cookie);ok((await call('card/'+token)).status===404,'owner revocation blocks public access');
-await call('session','DELETE',undefined,a.cookie);ok((await call('attempts','GET',undefined,a.cookie)).body.attempts.length===0,'deletion removes saved work');
-await call('session','DELETE',undefined,b.cookie);
+import assert from "node:assert/strict";
+const base = process.env.TEST_BASE || "http://127.0.0.1:4173";
+async function call(path, method = "GET", data, cookie = "", origin = base) {
+  const r = await fetch(base + "/api/" + path, {
+    method,
+    headers: {
+      Origin: origin,
+      ...(cookie ? { Cookie: cookie } : {}),
+      ...(data !== undefined ? { "Content-Type": "application/json" } : {}),
+    },
+    body: data !== undefined ? JSON.stringify(data) : undefined,
+  });
+  return {
+    status: r.status,
+    body: await r.json(),
+    cookie: r.headers.get("set-cookie")?.split(";")[0],
+  };
+}
+let checks = 0;
+const ok = (v, msg) => {
+  assert(v, msg);
+  checks++;
+  console.log("PASS", msg);
+};
+const a = await call("session", "POST"),
+  b = await call("session", "POST");
+ok(a.cookie && b.cookie && a.cookie !== b.cookie, "isolated sessions");
+const text =
+  "I am sorry this has caused concern. The receipt shows one R180 purchase and two pending entries. First, I will check payment status with my supervisor. Then we can confirm what settled. I cannot promise a refund today.";
+const saved = await call(
+  "attempts",
+  "POST",
+  { task: "double-charge", response: text },
+  a.cookie,
+);
+ok(saved.status === 201, "save response");
+ok(
+  (await call("attempts", "GET", undefined, b.cookie)).body.attempts.length ===
+    0,
+  "other session cannot read response",
+);
+ok(
+  (
+    await call(
+      "attempts",
+      "POST",
+      { task: "double-charge", response: "tiny" },
+      a.cookie,
+    )
+  ).status === 400,
+  "short input rejected",
+);
+ok(
+  (await call("attempts", "POST", { task: "bad", response: text }, a.cookie))
+    .status === 400,
+  "unknown task rejected",
+);
+ok(
+  (
+    await call(
+      "attempts",
+      "POST",
+      { task: "double-charge", response: text },
+      a.cookie,
+      "https://untrusted.example",
+    )
+  ).status === 403,
+  "foreign-origin write rejected",
+);
+ok(
+  (await call("attempts", "POST", { task: "double-charge", response: text }))
+    .status === 401,
+  "unauthenticated write rejected",
+);
+const share = await call("shares", "POST", { task: "double-charge" }, a.cookie);
+ok(share.status === 201, "create share");
+const token = share.body.token;
+ok(
+  (await call("card/" + token)).body.attempts.length === 1,
+  "public snapshot readable",
+);
+await call(
+  "attempts",
+  "POST",
+  { task: "double-charge", response: text + " I will explain the next steps." },
+  a.cookie,
+);
+ok(
+  (await call("card/" + token)).body.attempts.length === 1,
+  "snapshot excludes later revisions",
+);
+await call("shares", "DELETE", { token }, b.cookie);
+ok(
+  (await call("card/" + token)).status === 200,
+  "other session cannot revoke card",
+);
+await call("shares", "DELETE", { token }, a.cookie);
+ok(
+  (await call("card/" + token)).status === 404,
+  "owner revocation blocks public access",
+);
+await call("session", "DELETE", undefined, a.cookie);
+ok(
+  (await call("attempts", "GET", undefined, a.cookie)).body.attempts.length ===
+    0,
+  "deletion removes saved work",
+);
+await call("session", "DELETE", undefined, b.cookie);
 console.log(`${checks} API checks passed`);

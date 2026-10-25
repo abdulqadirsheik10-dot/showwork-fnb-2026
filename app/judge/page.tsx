@@ -1,2 +1,102 @@
-import {Check,ArrowUpRight} from 'lucide-react';
-export default function Judge(){return <main className="standalone"><a className="wordmark" href="/"><span className="mark"><Check size={23}/></span>ShowWork</a><p className="eyebrow">FNB AOTY Hackathon 2026 · The Sponges</p><h1>Judge’s guide</h1><p className="intro-copy">Try the complete journey in about five minutes. No login is needed. Saving a response creates a private, temporary workspace in your browser.</p><ol className="judge-steps"><li><strong>Select “Start this task”.</strong><p>Read the situation about two pending card charges. Select “I’m ready to write”.</p></li><li><strong>Write a response and select “Save and get feedback”.</strong><p>Try promising an immediate refund, then check the feedback against the store policy. You can also load an example under “Need help getting started?”.</p></li><li><strong>Select “Improve my response”.</strong><p>Change your answer and save again. “My saved work” keeps both versions.</p></li><li><strong>Select “Share this work”.</strong><p>Create a link, then open the reviewer view. It shows the situation, policy and responses saved when the link was created.</p></li><li><strong>Test revocation.</strong><p>In “My saved work”, revoke the link. Reload the reviewer page to see that it is unavailable.</p></li></ol><a className="primary" href="/">Try ShowWork <ArrowUpRight size={20}/></a><section className="paper"><h2>What is built</h2><p>Three retail tasks, saved responses and revisions, writing checks, practice recommendations, and revocable sharing. The interface guides the user through Read, Write and Review. Body text is 18px, with large buttons and a layout for smaller screens.</p><h2>Architecture</h2><p>React and Vinext frontend → same-origin Cloudflare Worker routes → D1 database. Private demo sessions use HttpOnly cookies. The server checks ownership, input size, request origin and quotas. Share links are random snapshots of one task. Sessions expire after seven days.</p><h2>AI integration status</h2><p>The public demo uses phrase-based writing checks. An optional OpenAI API adapter is included in the source. It is disabled and tested with a mock service only. Connecting it to the live app still requires configuration, consent, cost controls and a quality evaluation.</p><p>The feedback can miss valid answers or recognise words used incorrectly. It helps users edit; a person must read the actual response to judge its quality. ShowWork does not rank candidates or certify skills.</p><h2>What needs validation</h2><p>Whether young people finish the tasks, whether employers find the work samples useful, and whether training providers will pay. No real user trials, partnerships, revenue or employment outcomes are claimed. A small pilot is the proposed next step.</p></section><p className="fineprint">Use made-up information only. Work lasts seven days. Clearing your browser cookies removes access to your workspace. Saved or printed copies cannot be recalled after sharing.</p></main>}
+import { Check, ArrowUpRight } from "lucide-react";
+export default function Judge() {
+  return (
+    <main className="standalone">
+      <a className="wordmark" href="/">
+        <span className="mark">
+          <Check size={23} />
+        </span>
+        ShowWork
+      </a>
+      <p className="eyebrow">FNB AOTY Hackathon 2026 · The Sponges</p>
+      <h1>Judge’s guide</h1>
+      <p className="intro-copy">
+        Try the complete journey in about five minutes. No login is needed.
+        Saving a response creates a private, temporary workspace in your
+        browser.
+      </p>
+      <ol className="judge-steps">
+        <li>
+          <strong>Select “Start this task”.</strong>
+          <p>
+            Read the situation about two pending card charges. Select “I’m ready
+            to write”.
+          </p>
+        </li>
+        <li>
+          <strong>Write a response and select “Save and get feedback”.</strong>
+          <p>
+            Try promising an immediate refund, then check the feedback against
+            the store policy. You can also load an example under “Need help
+            getting started?”.
+          </p>
+        </li>
+        <li>
+          <strong>Select “Improve my response”.</strong>
+          <p>
+            Change your answer and save again. “My saved work” keeps both
+            versions.
+          </p>
+        </li>
+        <li>
+          <strong>Select “Share this work”.</strong>
+          <p>
+            Create a link, then open the reviewer view. It shows the situation,
+            policy and responses saved when the link was created.
+          </p>
+        </li>
+        <li>
+          <strong>Test revocation.</strong>
+          <p>
+            In “My saved work”, revoke the link. Reload the reviewer page to see
+            that it is unavailable.
+          </p>
+        </li>
+      </ol>
+      <a className="primary" href="/">
+        Try ShowWork <ArrowUpRight size={20} />
+      </a>
+      <section className="paper">
+        <h2>What is built</h2>
+        <p>
+          Three retail tasks, saved responses and revisions, writing checks,
+          practice recommendations, and revocable sharing. The interface guides
+          the user through Read, Write and Review. Body text is 18px, with large
+          buttons and a layout for smaller screens.
+        </p>
+        <h2>Architecture</h2>
+        <p>
+          React and Vinext frontend → same-origin Cloudflare Worker routes → D1
+          database. Private demo sessions use HttpOnly cookies. The server
+          checks ownership, input size, request origin and quotas. Share links
+          are random snapshots of one task. Sessions expire after seven days.
+        </p>
+        <h2>AI integration status</h2>
+        <p>
+          The public demo uses phrase-based writing checks. An optional OpenAI
+          API adapter is included in the source. It is disabled and tested with
+          a mock service only. Connecting it to the live app still requires
+          configuration, consent, cost controls and a quality evaluation.
+        </p>
+        <p>
+          The feedback can miss valid answers or recognise words used
+          incorrectly. It helps users edit; a person must read the actual
+          response to judge its quality. ShowWork does not rank candidates or
+          certify skills.
+        </p>
+        <h2>What needs validation</h2>
+        <p>
+          Whether young people finish the tasks, whether employers find the work
+          samples useful, and whether training providers will pay. No real user
+          trials, partnerships, revenue or employment outcomes are claimed. A
+          small pilot is the proposed next step.
+        </p>
+      </section>
+      <p className="fineprint">
+        Use made-up information only. Work lasts seven days. Clearing your
+        browser cookies removes access to your workspace. Saved or printed
+        copies cannot be recalled after sharing.
+      </p>
+    </main>
+  );
+}

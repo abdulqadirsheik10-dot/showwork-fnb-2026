@@ -1,7 +1,59 @@
-import {owner,originOK,json,db,body,token,quota} from '@/lib/server';import {getTask} from '@/lib/tasks';
-export async function GET(req:Request){const id=await owner(req);if(!id)return json({shares:[]});const rows=await db().prepare('SELECT token,task,created FROM shares WHERE owner=? AND revoked=0 ORDER BY created DESC').bind(id).all();return json({shares:rows.results})}
-export async function POST(req:Request){if(!originOK(req))return json({error:'Request rejected.'},403);const id=await owner(req);if(!id)return json({error:'Start a demo session first.'},401);let b;try{b=await body(req)}catch{return json({error:'Invalid request.'},400)}if(!getTask(b.task))return json({error:'Choose a task.'},400);
- if(!await db().prepare('SELECT id FROM attempts WHERE owner=? AND task=? LIMIT 1').bind(id,b.task).first())return json({error:'Complete the task before sharing it.'},400);
- if(!await quota('share:'+id,20))return json({error:'Share limit reached for today.'},429);
- const t=token();await db().prepare('INSERT INTO shares(token,owner,task,created,revoked) VALUES (?,?,?,?,0)').bind(t,id,b.task,Date.now()).run();return json({token:t},201)}
-export async function DELETE(req:Request){if(!originOK(req))return json({error:'Request rejected.'},403);const id=await owner(req);if(!id)return json({error:'Session expired.'},401);let b;try{b=await body(req)}catch{return json({error:'Invalid request.'},400)}if(typeof b.token!=='string')return json({error:'Invalid link.'},400);await db().prepare('UPDATE shares SET revoked=1 WHERE token=? AND owner=?').bind(b.token,id).run();return json({ok:true})}
+import { owner, originOK, json, db, body, token, quota } from "@/lib/server";
+import { getTask } from "@/lib/tasks";
+export async function GET(req: Request) {
+  const id = await owner(req);
+  if (!id) return json({ shares: [] });
+  const rows = await db()
+    .prepare(
+      "SELECT token,task,created FROM shares WHERE owner=? AND revoked=0 ORDER BY created DESC",
+    )
+    .bind(id)
+    .all();
+  return json({ shares: rows.results });
+}
+export async function POST(req: Request) {
+  if (!originOK(req)) return json({ error: "Request rejected." }, 403);
+  const id = await owner(req);
+  if (!id) return json({ error: "Start a demo session first." }, 401);
+  let b;
+  try {
+    b = await body(req);
+  } catch {
+    return json({ error: "Invalid request." }, 400);
+  }
+  if (!getTask(b.task)) return json({ error: "Choose a task." }, 400);
+  if (
+    !(await db()
+      .prepare("SELECT id FROM attempts WHERE owner=? AND task=? LIMIT 1")
+      .bind(id, b.task)
+      .first())
+  )
+    return json({ error: "Complete the task before sharing it." }, 400);
+  if (!(await quota("share:" + id, 20)))
+    return json({ error: "Share limit reached for today." }, 429);
+  const t = token();
+  await db()
+    .prepare(
+      "INSERT INTO shares(token,owner,task,created,revoked) VALUES (?,?,?,?,0)",
+    )
+    .bind(t, id, b.task, Date.now())
+    .run();
+  return json({ token: t }, 201);
+}
+export async function DELETE(req: Request) {
+  if (!originOK(req)) return json({ error: "Request rejected." }, 403);
+  const id = await owner(req);
+  if (!id) return json({ error: "Session expired." }, 401);
+  let b;
+  try {
+    b = await body(req);
+  } catch {
+    return json({ error: "Invalid request." }, 400);
+  }
+  if (typeof b.token !== "string") return json({ error: "Invalid link." }, 400);
+  await db()
+    .prepare("UPDATE shares SET revoked=1 WHERE token=? AND owner=?")
+    .bind(b.token, id)
+    .run();
+  return json({ ok: true });
+}
