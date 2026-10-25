@@ -56,6 +56,16 @@ export default function Judge() {
       <a className="primary" href="/">
         Try ShowWork <ArrowUpRight size={20} />
       </a>
+      <p className="judge-materials">
+        <a href="/submission/ShowWork-Demo.mp4">Watch the 77-second demo</a> ·{" "}
+        <a href="/submission/ShowWork-Submission.pdf">
+          Read the submission slides
+        </a>{" "}
+        ·{" "}
+        <a href="https://github.com/abdulqadirsheik10-dot/showwork-fnb-2026">
+          View source code
+        </a>
+      </p>
       <section className="paper">
         <h2>What is built</h2>
         <p>
