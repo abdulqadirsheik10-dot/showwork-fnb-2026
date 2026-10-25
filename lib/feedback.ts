@@ -1,11 +1,11 @@
 import {getTask} from './tasks';
-export const RULE_VERSION='language-checks-1.0';
+export const RULE_VERSION='language-checks-1.1';
 export type Finding={id:string;label:string;found:boolean;evidence:string|null;note:string};
 export type Feedback={version:string;mode:'rules';findings:Finding[];warnings:string[];nextTask:string;reason:string};
 export function assess(taskId:string,response:string):Feedback{
  const task=getTask(taskId);if(!task)throw new Error('Unknown task');
  const sentences=response.split(/(?<=[.!?\n])\s*/).filter(Boolean);
- const passages=sentences.flatMap((s,i)=>{const start=response.indexOf(s);const next=sentences[i+1];return next?[s,response.slice(start,response.indexOf(next,start+s.length)+next.length)]:[s]});
+ const passages=[...sentences,...sentences.flatMap((s,i)=>{const start=response.indexOf(s);const next=sentences[i+1];return next?[response.slice(start,response.indexOf(next,start+s.length)+next.length)]:[]})];
  const evidence=(patterns:RegExp[])=>passages.find(s=>patterns.every(p=>p.test(s))) || null;
  const any=(p:RegExp)=>evidence([p]);
  let matches:Record<string,string|null>={};
@@ -17,6 +17,6 @@ export function assess(taskId:string,response:string):Feedback{
  if(taskId==='stock-check'&&/\b(theft|stole|stolen)\b/i.test(response)&&!(/not|cannot|don.t|no evidence/i.test(response)))warnings.push('The discrepancy does not establish theft. Describe the facts and investigate before assigning a cause.');
  const findings=task.checks.map(c=>{const quote=matches[c.id];return {id:c.id,label:c.label,found:!!quote,evidence:quote,note:quote?'A related phrase was found. Check that it means what you intended.':c.guidance}});
  let nextTask=taskId,reason='Revise this response using the prompts marked “Review”.';
- if(findings.every(f=>f.found)&&!warnings.length){nextTask=taskId==='double-charge'?'stock-check':taskId==='stock-check'?'handover':'double-charge';reason='You have addressed each writing prompt. Try a different type of task next; this is a practice recommendation, not an assessment of job readiness.';}
+ if(findings.every(f=>f.found)&&!warnings.length){nextTask=taskId==='double-charge'?'stock-check':taskId==='stock-check'?'handover':'double-charge';reason='The checks found a phrase for each prompt. Try a different task next. A person still needs to review the quality of your response.';}
  return {version:RULE_VERSION,mode:'rules',findings,warnings,nextTask,reason};
 }
